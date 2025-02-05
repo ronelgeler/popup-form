@@ -7,10 +7,9 @@
   <style>
     body {
       font-family: Arial, sans-serif;
-      background-color: white;
-      text-align: center;
       margin: 0;
-      padding: 20px;
+      padding: 0;
+      background-color: white;
     }
 
     .popup-overlay {
@@ -20,7 +19,7 @@
       width: 100%;
       height: 100%;
       background: rgba(0, 0, 0, 0.5);
-      display: none; /* Hidden by default */
+      display: flex;
       justify-content: center;
       align-items: center;
     }
@@ -30,8 +29,9 @@
       padding: 20px;
       border-radius: 10px;
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-      max-width: 350px;
-      color: black;
+      width: 90%;
+      max-width: 400px;
+      text-align: center;
       position: relative;
     }
 
@@ -45,10 +45,6 @@
       margin: 10px 0;
       border: 1px solid #ccc;
       border-radius: 5px;
-    }
-
-    input[name="phone"] {
-      text-align: right;
     }
 
     button {
@@ -79,8 +75,6 @@
 </head>
 <body>
 
-  <button onclick="openPopup()">📢 קבל הדרכה חינם!</button>
-
   <div class="popup-overlay" id="popup">
     <div class="popup">
       <button class="close-btn" onclick="closePopup()">×</button>
@@ -95,13 +89,13 @@
   </div>
 
   <script>
-    function openPopup() {
-      document.getElementById('popup').style.display = 'flex';
-    }
-
     function closePopup() {
       document.getElementById('popup').style.display = 'none';
     }
+
+    window.onload = function() {
+      document.getElementById('popup').style.display = 'flex';
+    };
   </script>
 
 </body>
