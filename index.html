@@ -7,8 +7,8 @@
   <style>
     body {
       font-family: Arial, sans-serif;
-      background-color: transparent;
-      margin: 0;
+      background-color: #95ad88;
+      overflow: hidden;
     }
     .popup-overlay {
       position: fixed;
@@ -20,6 +20,9 @@
       display: flex;
       justify-content: center;
       align-items: center;
+      visibility: hidden;
+      opacity: 0;
+      transition: opacity 0.3s ease-in-out;
     }
     .popup {
       background: white;
@@ -81,14 +84,18 @@
       </form>
     </div>
   </div>
+
   <script>
+    function openPopup() {
+      document.getElementById('popup').style.visibility = 'visible';
+      document.getElementById('popup').style.opacity = '1';
+    }
     function closePopup() {
-      document.getElementById('popup').style.display = 'none';
+      document.getElementById('popup').style.visibility = 'hidden';
+      document.getElementById('popup').style.opacity = '0';
     }
     window.onload = function() {
-      setTimeout(function() {
-        document.getElementById('popup').style.display = 'flex';
-      }, 2000);
+      setTimeout(openPopup, 2000); // Open after 2 seconds
     };
   </script>
 </body>
