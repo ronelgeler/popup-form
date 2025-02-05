@@ -1,104 +1,97 @@
 <!DOCTYPE html>
-<html lang="he" dir="rtl">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>הדרכה חינם</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-      background-color: white;
-      overflow: hidden;
-    }
-
-    .popup-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.5);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-
-    .popup {
-      background: white;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-      width: 90%;
-      max-width: 400px;
-      text-align: center;
-      position: relative;
-    }
-
-    h2, p, input, button {
-      color: black;
-    }
-
-    input {
-      width: 90%;
-      padding: 10px;
-      margin: 10px 0;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-    }
-
-    button {
-      background-color: #95ad88;
-      color: white;
-      border: none;
-      padding: 10px;
-      width: 100%;
-      border-radius: 5px;
-      cursor: pointer;
-      font-size: 16px;
-    }
-
-    button:hover {
-      background-color: #7a926f;
-    }
-
-    .close-btn {
-      position: absolute;
-      top: 10px;
-      right: 15px;
-      background: none;
-      border: none;
-      font-size: 18px;
-      cursor: pointer;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compound Interest Calculator</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; }
+        .container { max-width: 600px; margin: auto; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: right; }
+        th { background-color: #f4f4f4; }
+        canvas { margin-top: 20px; }
+    </style>
 </head>
 <body>
-
-  <div class="popup-overlay" id="popup">
-    <div class="popup">
-      <button class="close-btn" onclick="closePopup()">×</button>
-      <h2>ההדרכה זמינה לזמן מוגבל</h2>
-      <p>מלא את הפרטים כאן למטה</p>
-      <form action="https://formspree.io/f/xvgzqozw" method="POST">
-        <input type="text" name="name" placeholder="איך קוראים לך" required>
-        <input type="tel" name="phone" placeholder="מספר טלפון" required>
-        <button type="submit">תשלח לי את ההדרכה עכשיו!</button>
-      </form>
+    <div class="container">
+        <h2>Compound Interest Calculator</h2>
+        <label>Principal ($): <input type="number" id="principal" value="1000"></label><br><br>
+        <label>Annual Interest Rate (%): <input type="number" id="rate" value="5"></label><br><br>
+        <label>Years: <input type="number" id="years" value="10"></label><br><br>
+        <label>Compounds per Year: 
+            <select id="compounds">
+                <option value="1">Annually</option>
+                <option value="4">Quarterly</option>
+                <option value="12" selected>Monthly</option>
+                <option value="365">Daily</option>
+            </select>
+        </label><br><br>
+        <button onclick="calculate()">Calculate</button>
+        
+        <canvas id="interestChart"></canvas>
+        
+        <table id="breakdownTable">
+            <thead>
+                <tr>
+                    <th>Year</th>
+                    <th>Balance ($)</th>
+                    <th>Interest Earned ($)</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
     </div>
-  </div>
 
-  <script>
-    function closePopup() {
-      document.getElementById('popup').style.display = 'none';
-    }
-
-    window.onload = function() {
-      document.getElementById('popup').style.display = 'flex';
-    };
-  </script>
-
+    <script>
+        function calculate() {
+            let principal = parseFloat(document.getElementById('principal').value);
+            let rate = parseFloat(document.getElementById('rate').value) / 100;
+            let years = parseInt(document.getElementById('years').value);
+            let compounds = parseInt(document.getElementById('compounds').value);
+            
+            let data = [];
+            let labels = [];
+            let tbody = document.querySelector('#breakdownTable tbody');
+            tbody.innerHTML = '';
+            let previousBalance = principal;
+            
+            for (let year = 1; year <= years; year++) {
+                let balance = principal * Math.pow(1 + rate / compounds, compounds * year);
+                let interestEarned = balance - previousBalance;
+                previousBalance = balance;
+                
+                labels.push(year);
+                data.push(balance.toFixed(2));
+                
+                let row = `<tr><td>${year}</td><td>${balance.toFixed(2)}</td><td>${interestEarned.toFixed(2)}</td></tr>`;
+                tbody.innerHTML += row;
+            }
+            
+            drawChart(labels, data);
+        }
+        
+        function drawChart(labels, data) {
+            let ctx = document.getElementById('interestChart').getContext('2d');
+            if (window.myChart) window.myChart.destroy();
+            window.myChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Balance Over Time',
+                        data: data,
+                        borderColor: 'blue',
+                        fill: false
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: { y: { beginAtZero: true } }
+                }
+            });
+        }
+    </script>
 </body>
 </html>
-
