@@ -1,13 +1,13 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="he">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Compound Interest Calculator</title>
+    <title>מחשבון ריבית דריבית</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        body { font-family: Arial, sans-serif; text-align: center; }
-        .container { max-width: 600px; margin: auto; }
+        body { font-family: Arial, sans-serif; text-align: center; direction: rtl; background-color: #95ad88; }
+        .container { max-width: 600px; margin: auto; background: white; padding: 20px; border-radius: 10px; }
         table { width: 100%; border-collapse: collapse; margin-top: 20px; }
         th, td { border: 1px solid #ddd; padding: 8px; text-align: right; }
         th { background-color: #f4f4f4; }
@@ -16,28 +16,29 @@
 </head>
 <body>
     <div class="container">
-        <h2>Compound Interest Calculator</h2>
-        <label>Principal ($): <input type="number" id="principal" value="1000"></label><br><br>
-        <label>Annual Interest Rate (%): <input type="number" id="rate" value="5"></label><br><br>
-        <label>Years: <input type="number" id="years" value="10"></label><br><br>
-        <label>Compounds per Year: 
+        <h2>מחשבון ריבית דריבית</h2>
+        <label>סכום השקעה ראשוני (₪): <input type="number" id="principal" value="1000"></label><br><br>
+        <label>סכום השקעה חודשי (₪): <input type="number" id="monthlyInvestment" value="0"></label><br><br>
+        <label>ריבית שנתית ממוצעת (%): <input type="number" id="rate" value="5"></label><br><br>
+        <label>מספר שנות השקעה: <input type="number" id="years" value="10"></label><br><br>
+        <label>תדירות חישוב הריבית:
             <select id="compounds">
-                <option value="1">Annually</option>
-                <option value="4">Quarterly</option>
-                <option value="12" selected>Monthly</option>
-                <option value="365">Daily</option>
+                <option value="1">שנתי</option>
+                <option value="4">רבעוני</option>
+                <option value="12" selected>חודשי</option>
+                <option value="365">יומי</option>
             </select>
         </label><br><br>
-        <button onclick="calculate()">Calculate</button>
+        <button onclick="calculate()">חשב</button>
         
         <canvas id="interestChart"></canvas>
         
         <table id="breakdownTable">
             <thead>
                 <tr>
-                    <th>Year</th>
-                    <th>Balance ($)</th>
-                    <th>Interest Earned ($)</th>
+                    <th>שנה</th>
+                    <th>יתרה (₪)</th>
+                    <th>ריבית נצברת (₪)</th>
                 </tr>
             </thead>
             <tbody></tbody>
@@ -47,6 +48,7 @@
     <script>
         function calculate() {
             let principal = parseFloat(document.getElementById('principal').value);
+            let monthlyInvestment = parseFloat(document.getElementById('monthlyInvestment').value);
             let rate = parseFloat(document.getElementById('rate').value) / 100;
             let years = parseInt(document.getElementById('years').value);
             let compounds = parseInt(document.getElementById('compounds').value);
@@ -58,8 +60,12 @@
             let previousBalance = principal;
             
             for (let year = 1; year <= years; year++) {
-                let balance = principal * Math.pow(1 + rate / compounds, compounds * year);
-                let interestEarned = balance - previousBalance;
+                for (let month = 1; month <= 12; month++) {
+                    principal += monthlyInvestment;
+                    principal *= Math.pow(1 + rate / compounds, compounds / 12);
+                }
+                let balance = principal;
+                let interestEarned = balance - previousBalance - (monthlyInvestment * 12);
                 previousBalance = balance;
                 
                 labels.push(year);
@@ -80,10 +86,11 @@
                 data: {
                     labels: labels,
                     datasets: [{
-                        label: 'Balance Over Time',
+                        label: 'יתרה לאורך זמן',
                         data: data,
-                        borderColor: 'blue',
-                        fill: false
+                        borderColor: '#95ad88',
+                        backgroundColor: 'rgba(149, 173, 136, 0.2)',
+                        fill: true
                     }]
                 },
                 options: {
@@ -95,3 +102,4 @@
     </script>
 </body>
 </html>
+
