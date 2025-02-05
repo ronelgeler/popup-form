@@ -12,6 +12,7 @@
         th, td { border: 1px solid #ddd; padding: 8px; text-align: right; }
         th { background-color: #f4f4f4; }
         canvas { margin-top: 20px; }
+        .summary-box { background: white; padding: 20px; border-radius: 10px; margin-top: 20px; }
     </style>
 </head>
 <body>
@@ -33,12 +34,21 @@
         
         <canvas id="interestChart"></canvas>
         
+        <div class="summary-box">
+            <h3>תחזית ל- <span id="totalYears"></span> שנים</h3>
+            <p>השקעה ראשונית: ₪<span id="initialInvestment"></span></p>
+            <p>סה"כ הפקדות: ₪<span id="totalDeposits"></span></p>
+            <p>סה"כ רווח: ₪<span id="totalEarnings"></span></p>
+            <p>ערך השקעה: ₪<span id="finalBalance"></span></p>
+        </div>
+        
         <table id="breakdownTable">
             <thead>
                 <tr>
                     <th>שנה</th>
-                    <th>יתרה (₪)</th>
-                    <th>ריבית נצברת (₪)</th>
+                    <th>הפקדה שנתית (₪)</th>
+                    <th>רווח שנתי (₪)</th>
+                    <th>סה"כ חיסכון (₪)</th>
                 </tr>
             </thead>
             <tbody></tbody>
@@ -53,10 +63,15 @@
             let years = parseInt(document.getElementById('years').value);
             let compounds = parseInt(document.getElementById('compounds').value);
             
+            document.getElementById('totalYears').innerText = years;
+            document.getElementById('initialInvestment').innerText = principal.toFixed(2);
+            
             let data = [];
             let labels = [];
             let tbody = document.querySelector('#breakdownTable tbody');
             tbody.innerHTML = '';
+            let totalDeposits = principal;
+            let totalEarnings = 0;
             let previousBalance = principal;
             
             for (let year = 1; year <= years; year++) {
@@ -65,15 +80,21 @@
                     principal *= Math.pow(1 + rate / compounds, compounds / 12);
                 }
                 let balance = principal;
-                let interestEarned = balance - previousBalance - (monthlyInvestment * 12);
+                let yearlyEarnings = balance - previousBalance - (monthlyInvestment * 12);
+                totalDeposits += monthlyInvestment * 12;
+                totalEarnings += yearlyEarnings;
                 previousBalance = balance;
                 
                 labels.push(year);
                 data.push(balance.toFixed(2));
                 
-                let row = `<tr><td>${year}</td><td>${balance.toFixed(2)}</td><td>${interestEarned.toFixed(2)}</td></tr>`;
+                let row = `<tr><td>${2025 + year - 1}</td><td>₪${(monthlyInvestment * 12).toFixed(2)}</td><td>₪${yearlyEarnings.toFixed(2)}</td><td>₪${balance.toFixed(2)}</td></tr>`;
                 tbody.innerHTML += row;
             }
+            
+            document.getElementById('totalDeposits').innerText = totalDeposits.toFixed(2);
+            document.getElementById('totalEarnings').innerText = totalEarnings.toFixed(2);
+            document.getElementById('finalBalance').innerText = principal.toFixed(2);
             
             drawChart(labels, data);
         }
